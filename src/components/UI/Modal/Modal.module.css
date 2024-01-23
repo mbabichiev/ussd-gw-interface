@@ -1,0 +1,12 @@
+.modal {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, transform 0.5s ease, visibility 0.5s;
+    transform: translateY(-10%);
+}
+
+.modal.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
