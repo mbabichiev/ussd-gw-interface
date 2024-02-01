@@ -12,11 +12,38 @@ const Navbar = () => {
                 </div>
 
                 <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-                    <li><Link to="/" class="nav-link fw-bold py-1 px-2">Home</Link></li>
-                    <li><Link to="/links" class="nav-link fw-bold py-1 px-2 link-secondary">Links</Link></li>
-                    <li><Link to="/statistics" class="nav-link fw-bold py-1 px-2 link-secondary">Statistics</Link></li>
-                    <li><Link to="/rules" class="nav-link fw-bold py-1 px-2 link-secondary">Routing rules</Link></li>
-                    <li><Link to="/settings" class="nav-link fw-bold py-1 px-2 link-secondary">Settings</Link></li>
+                    <li>
+                        <Link to="/" class="nav-link fw-bold py-1 px-2 justify-content-center d-flex align-items-center">
+                            <svg class="bi me-1 align-self-center" width="1.3em" height="1.3em" fill="currentColor" style={{ verticalAlign: 'middle' }}>
+                                <use href="#home"></use>
+                            </svg>
+                            Home
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/links" class="nav-link fw-bold py-1 px-2 link-secondary d-flex align-items-center">
+                            <svg class="bi me-1 align-self-center" width="1.3em" height="1.3em" fill="currentColor" style={{ verticalAlign: 'middle' }}>
+                                <use href="#links"></use>
+                            </svg>
+                            Links
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/ussd-menu" class="nav-link fw-bold py-1 px-2 link-secondary d-flex align-items-center">
+                            <svg class="bi me-1 align-self-center" width="1.3em" height="1.3em" fill="currentColor" style={{ verticalAlign: 'middle' }}>
+                                <use href="#menu"></use>
+                            </svg>
+                            USSD menu
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/settings" class="nav-link fw-bold py-1 px-2 link-secondary d-flex align-items-center">
+                            <svg class="bi me-1 align-self-center" width="1.3em" height="1.3em" fill="currentColor" style={{ verticalAlign: 'middle' }}>
+                                <use href="#gear-fill"></use>
+                            </svg>
+                            Settings
+                        </Link>
+                    </li>
                 </ul>
 
                 <div class="col-md-3 text-end">

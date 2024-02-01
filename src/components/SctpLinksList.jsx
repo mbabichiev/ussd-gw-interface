@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import SctpLinkService from '../API/SctpLinkService';
 import { SERVER_ERROR } from '../config';
 import BaseLinkList from './BaseLinkList';
-import CreateSctpLinkForm from './CreateSctpLinkForm';
+import ErrorText from './ErrorText';
+import CreateSctpLinkModal from './modals/CreateSctpLinkModal';
 import DeleteSctpLinkModal from './modals/DeleteSctpLinkModal';
+import EditSctpLinkModal from './modals/EditSctpLinkModal';
 import RestartSctpLinkModal from './modals/RestartSctpLinkModal';
+import SctpLinkInfoModal from './modals/SctpLinkInfoModal';
 import StartSctpLinkModal from './modals/StartSctpLinkModal';
 import StopSctpLinkModal from './modals/StopSctpLinkModal';
 import SctpLinkItem from './SctpLinkItem';
@@ -12,167 +15,149 @@ import SctpLinkItem from './SctpLinkItem';
 
 const SctpLinksList = ({ links, updateLinks, isUpdating }) => {
 
-    const [isCreateModalShow, setIsCreateModalShow] = useState(false);
-    const [isStartModalShow, setIsStartModalShow] = useState(false);
-    const [isRestartModalShow, setIsRestartModalShow] = useState(false);
-    const [isStopModalShow, setIsStopModalShow] = useState(false);
-    const [isDeleteModalShow, setIsDeleteModalShow] = useState(false);
+    const [isModalShow, setIsModalShow] = useState(false);
+    const [modalType, setModalType] = useState('');
     const [currentId, setCurrentId] = useState('');
+    const [link, setLink] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    function toggleCreateModal() {
-        setIsCreateModalShow(!isCreateModalShow);
+    function toggleModal() {
+        setIsModalShow(!isModalShow);
     }
 
-    function toggleStartModal() {
-        setIsStartModalShow(!isStartModalShow);
-    }
-
-    function toggleRestartModal() {
-        setIsRestartModalShow(!isRestartModalShow);
-    }
-
-    function toggleStopModal() {
-        setIsStopModalShow(!isStopModalShow);
-    }
-
-    function toggleDeleteModal() {
-        setIsDeleteModalShow(!isDeleteModalShow);
-    }
-
-
-    async function accepToStartItem() {
+    async function accept(serviceMethod, successStatus) {
         setIsLoading(true);
-        const response = await SctpLinkService.start(currentId);
+        const response = await serviceMethod(currentId);
 
-        if(response && response.status === 202) {
+        if (response && response.status === successStatus) {
             await updateLinks();
         } else if (response && response.status === 400) {
-            alert(response.data.message)
+            alert(response.data.message);
         } else {
-            alert(SERVER_ERROR)
+            alert(SERVER_ERROR);
         }
-        toggleStartModal();
+
+        toggleModal();
         setIsLoading(false);
+    }
+
+    async function accepToStartItem() {
+        accept(SctpLinkService.start, 202)
     }
 
     async function accepToRestartItem() {
-        setIsLoading(true);
-        const response = await SctpLinkService.restart(currentId);
-
-        if(response && response.status === 202) {
-            await updateLinks();
-        } else if (response && response.status === 400) {
-            alert(response.data.message)
-        } else {
-            alert(SERVER_ERROR)
-        }
-        toggleRestartModal();
-        setIsLoading(false);
+        accept(SctpLinkService.restart, 202)
     }
 
     async function accepToStopItem() {
-        setIsLoading(true);
-        const response = await SctpLinkService.stop(currentId);
-
-        if(response && response.status === 202) {
-            await updateLinks();
-        } else if (response && response.status === 400) {
-            alert(response.data.message)
-        } else {
-            alert(SERVER_ERROR)
-        }
-        toggleStopModal();
-        setIsLoading(false);
+        accept(SctpLinkService.stop, 202)
     }
 
     async function acceptToDeleteSctpLink() {
-        setIsLoading(true);
-        const response = await SctpLinkService.delete(currentId);
+        accept(SctpLinkService.delete, 204)
+    }
 
-        if(response && response.status === 204) {
-            await updateLinks();
-        } else if (response && response.status === 400) {
-            alert(response.data.message)
-        } else {
-            alert(SERVER_ERROR)
+    function showModalAndSetIdAndType(id, type) {
+        toggleModal();
+        if (id) {
+            setCurrentId(id);
         }
-        toggleDeleteModal();
-        setIsLoading(false);
+        setModalType(type);
     }
 
-    function showStartItem(id) {
-        toggleStartModal();
-        setCurrentId(id);
+    function showModalAndSetLinkAndType(link, type) {
+        toggleModal();
+        setLink(link);
+        setModalType(type);
     }
 
-    function showRestartItem(id) {
-        toggleRestartModal();
-        setCurrentId(id);
-    }
-
-    function showStopItem(id) {
-        toggleStopModal();
-        setCurrentId(id);
-    }
-
-    function showDeleteItem(id) {
-        toggleDeleteModal();
-        setCurrentId(id);
-    }
 
     function getModal() {
-        if (isStartModalShow) {
-            return <StartSctpLinkModal isOpen={isStartModalShow} isLoading={isLoading} accept={accepToStartItem} close={toggleStartModal} />
+        if (modalType === "START") {
+            return <StartSctpLinkModal isOpen={isModalShow} isLoading={isLoading} accept={accepToStartItem} close={toggleModal} />
         }
-        if(isRestartModalShow) {
-            return <RestartSctpLinkModal isOpen={isRestartModalShow} isLoading={isLoading} accept={accepToRestartItem} close={toggleRestartModal} />
+        if (modalType === "RESTART") {
+            return <RestartSctpLinkModal isOpen={isModalShow} isLoading={isLoading} accept={accepToRestartItem} close={toggleModal} />
         }
-        if(isStopModalShow) {
-            return <StopSctpLinkModal isOpen={isStopModalShow} isLoading={isLoading} accept={accepToStopItem} close={toggleStopModal}/>
+        if (modalType === "STOP") {
+            return <StopSctpLinkModal isOpen={isModalShow} isLoading={isLoading} accept={accepToStopItem} close={toggleModal} />
         }
-        if(isDeleteModalShow) {
-            return <DeleteSctpLinkModal isOpen={isDeleteModalShow} isLoading={isLoading} accept={acceptToDeleteSctpLink} close={toggleDeleteModal}/> ;
+        if (modalType === "DELETE") {
+            return <DeleteSctpLinkModal isOpen={isModalShow} isLoading={isLoading} accept={acceptToDeleteSctpLink} close={toggleModal} />;
         }
-        if(isCreateModalShow) {
-            return <CreateSctpLinkForm update={updateLinks} close={toggleCreateModal}/>
+        if (modalType === "CREATE") {
+            return <CreateSctpLinkModal isOpen={isModalShow} update={updateLinks} close={toggleModal} />
         }
+        if (modalType === "COPY") {
+            return <CreateSctpLinkModal isOpen={isModalShow} update={updateLinks} close={toggleModal} link={link} />
+        }
+        if (modalType === "EDIT") {
+            return <EditSctpLinkModal isOpen={isModalShow} update={updateLinks} close={toggleModal} link={link} />
+        }
+        if (modalType === "INFO") {
+            return <SctpLinkInfoModal isOpen={isModalShow} close={toggleModal} link={link} />
+        }
+
         return;
     }
 
+
+    function addLinkButton() {
+        return (<button className="btn btn-outline-secondary d-inline-flex align-items-center" type="button" onClick={() => showModalAndSetIdAndType(null, "CREATE")}>
+            <svg className="me-2" width="1.3em" height="1.3em" fill="currentColor"><use href="#add"></use></svg>
+            Create SCTP-link
+        </button>
+        )
+    }
+
+
     function loadSctpLinks() {
         if (links === null) {
-            return <div>An error occurred during loading SCTP-links</div>
+            return (
+                <div class="text-center">
+                    <ErrorText text={"An error occurred during loading SCTP-links: Server don't response"} />
+                </div>
+            )
         }
         if (links.length === 0) {
-            return <div>No SCTP-links</div>;
+            return (
+                <div className='text-center'>
+                    {addLinkButton()}
+                </div>
+            );
         }
 
-        return <table class="text-center table table-striped table-sm">
-            <thead class="bg-body-tertiary">
-                <tr>
-                    <th class="text-900">NAME</th>
-                    <th class="text-900">TYPE</th>
-                    <th class="text-900">LOCAL ADDRESSES</th>
-                    <th class="text-900">LOCAL PORT</th>
-                    <th class="text-900">REMOTE ADDRESSES</th>
-                    <th class="text-900">REMOTE PORT</th>
-                    <th class="text-900">STATE</th>
-                    <th class="text-900"></th>
-                </tr>
-            </thead>
-            <tbody>
-                {
-                    links.map(link => <SctpLinkItem
-                        link={link}
-                        startItem={showStartItem}
-                        restartItem={showRestartItem}
-                        stopItem={showStopItem}
-                        deleteItem={showDeleteItem}
-                        key={link.id} />)
-                }
-            </tbody>
-        </table>
+        return <>
+            <table class="text-center table table-striped table-sm">
+                <thead class="bg-body-tertiary">
+                    <tr>
+                        <th class="text-900">NAME</th>
+                        <th class="text-900">TYPE</th>
+                        <th class="text-900">LOCAL ADDRESSES</th>
+                        <th class="text-900">LOCAL PORT</th>
+                        <th class="text-900">REMOTE ADDRESSES</th>
+                        <th class="text-900">REMOTE PORT</th>
+                        <th class="text-900">STATE</th>
+                        <th class="text-900"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        links.map(link => <SctpLinkItem
+                            link={link}
+                            startItem={showModalAndSetIdAndType}
+                            restartItem={showModalAndSetIdAndType}
+                            stopItem={showModalAndSetIdAndType}
+                            deleteItem={showModalAndSetIdAndType}
+                            copyItem={showModalAndSetLinkAndType}
+                            editItem={showModalAndSetLinkAndType}
+                            infoItem={showModalAndSetLinkAndType}
+                            key={link.id} />)
+                    }
+                </tbody>
+            </table>
+            {addLinkButton()}
+        </>
     }
 
 
@@ -180,9 +165,6 @@ const SctpLinksList = ({ links, updateLinks, isUpdating }) => {
         <BaseLinkList
             nameList="SCTP"
             table={loadSctpLinks()}
-            createButtonName={"Create SCTP-link"}
-            toggleCreateModal={toggleCreateModal}
-            form={<CreateSctpLinkForm update={updateLinks} />}
             isUpdating={isUpdating}
             modal={getModal()}
         />

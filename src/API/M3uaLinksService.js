@@ -14,7 +14,6 @@ export default class M3uaLinkService {
         }
     }
 
-
     static async getAll() {
         try {
             const response = await axios.get(`${USSD_SERVER_URL}/api/m3ua`);
@@ -26,4 +25,25 @@ export default class M3uaLinkService {
         }
     }
 
+    static async update(id, data) {
+        try {
+            const response = await axios.put(`${USSD_SERVER_URL}/api/m3ua/${id}`, data);
+            return response;
+        }
+        catch (error) {
+            console.log(error.response);
+            return error.response;
+        }
+    }
+
+    static async delete(id) {
+        try {
+            const response = await axios.delete(`${USSD_SERVER_URL}/api/m3ua/${id}`);
+            return response;
+        }
+        catch (error) {
+            console.log(error.response);
+            return error.response;
+        }
+    }
 }

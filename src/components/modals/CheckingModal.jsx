@@ -32,7 +32,7 @@ const CheckingModal = ({ isOpen, name, description, yesButtonText, noButtonText,
 
     return (
         <BaseModal>
-            <br /><br /><br /><br /><br /><br /><br /><br /><br />
+            <br /><br /><br /><br /><br /><br /><br /><br />
             <div class="modal-dialog">
                 <div class="modal-content rounded-4 shadow">
                     <div class="modal-body p-4 text-center">

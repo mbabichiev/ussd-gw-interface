@@ -4,8 +4,8 @@ import { SERVER_ERROR } from '../config';
 import FormInput from './FormInput';
 import SsnList from './SsnList';
 
-const CreateM3uaLinkForm = ({ update, close, link }) => {
-    const [name, setName] = useState(link ? `${link.name}-copy` : '');
+const EditM3uaLinkForm = ({ update, close, link }) => {
+    const [name, setName] = useState(link ? link.name : '');
     const [ipspType, setIpspType] = useState(link ? link["ipsp-type"] : 'CLIENT');
     const [opc, setOpc] = useState(link ? link.opc : '');
     const [dpc, setDpc] = useState(link ? link.dpc : '');
@@ -20,9 +20,9 @@ const CreateM3uaLinkForm = ({ update, close, link }) => {
 
 
     const [classForm, setClassForm] = useState("fw-light");
-    const [isM3uaLinsCreating, setIsM3uaLinsCreating] = useState(false);
+    const [isM3uaLinkUpdating, setIsM3uaLinkUpdating] = useState(false);
 
-    async function create(e) {
+    async function updateLink(e) {
         e.preventDefault();
         setClassForm("fw-light was-validated")
         let trimedName = name.trim();
@@ -49,8 +49,8 @@ const CreateM3uaLinkForm = ({ update, close, link }) => {
             }
         }
 
-        setIsM3uaLinsCreating(true);
-        const response = await M3uaLinkService.create({
+        setIsM3uaLinkUpdating(true);
+        const response = await M3uaLinkService.update(link.id, {
             "name": resultName,
             "opc": opc,
             "dpc": dpc,
@@ -65,31 +65,31 @@ const CreateM3uaLinkForm = ({ update, close, link }) => {
             "long-message-rule": longMessageRule
         });
 
-        if (response && response.status === 201) {
+        if (response && response.status === 202) {
             await update();
-            setIsM3uaLinsCreating(false);
+            setIsM3uaLinkUpdating(false);
             close();
         } else if (response && response.status === 400) {
-            setIsM3uaLinsCreating(false);
+            setIsM3uaLinkUpdating(false);
             alert(response.data.message)
         } else {
-            setIsM3uaLinsCreating(false);
+            setIsM3uaLinkUpdating(false);
             alert(SERVER_ERROR)
         }
     }
 
 
     function getButtonCreate() {
-        if (isM3uaLinsCreating) {
+        if (isM3uaLinkUpdating) {
             return (
                 <button class="btn btn-primary btn-lg" type="button" disabled="">
                     <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                    <span role="status">Creating M3UA-link...</span>
+                    <span role="status">Updating M3UA-link...</span>
                 </button>
             )
         }
         return (
-            <button class="btn btn-primary btn-lg" onClick={create}>Create</button>
+            <button class="btn btn-primary btn-lg" onClick={updateLink}>Update</button>
         )
     }
 
@@ -221,4 +221,4 @@ const CreateM3uaLinkForm = ({ update, close, link }) => {
     )
 };
 
-export default CreateM3uaLinkForm;
+export default EditM3uaLinkForm;

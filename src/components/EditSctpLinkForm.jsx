@@ -4,21 +4,20 @@ import { SERVER_ERROR } from '../config';
 import AddressList from './AddressList';
 import FormInput from './FormInput';
 
-const CreateSctpLinkForm = ({ update, close, link }) => {
-
-    const [name, setName] = useState(link && link.name ? `${link.name}-copy`  : '');
-    const [type, setType] = useState(link && link.type ? link.type : 'CLIENT');
-    const [localPort, setLocalPort] = useState(link && link["local-port"] ? link["local-port"] : '');
-    const [localAddresses, setLocalAddresses] = useState(link && link["local-addresses"] ? link["local-addresses"] : ['']);
-    const [remotePort, setRemotePort] = useState(link && link["remote-port"] ? link["remote-port"] : '');
-    const [remoteAddresses, setRemoteAddresses] = useState(link && link["remote-addresses"] ? link["remote-addresses"] : ['']);
-    const [heartbeat, setHeartbeat] = useState(link ? link["is-heartbeat-enabled"] : true);
-    const [activeOnStart, setActiveOnStart] = useState(link ? link["active-on-start"] : true);
+const EditSctpLinkForm = ({ update, close, link }) => {
+    const [name, setName] = useState(link.name);
+    const [type, setType] = useState(link.type);
+    const [localPort, setLocalPort] = useState(link["local-port"]);
+    const [localAddresses, setLocalAddresses] = useState(link["local-addresses"]);
+    const [remotePort, setRemotePort] = useState(link["remote-port"]);
+    const [remoteAddresses, setRemoteAddresses] = useState(link["remote-addresses"]);
+    const [heartbeat, setHeartbeat] = useState(link["is-heartbeat-enabled"]);
+    const [activeOnStart, setActiveOnStart] = useState(link["active-on-start"]);
 
     const [classForm, setClassForm] = useState("fw-light");
     const [localPortError, setLocalPortError] = useState("Local port is required");
     const [remotePortError, setRemotePortError] = useState("Remote port is required");
-    const [isSctpLinsCreating, setIsSctpLinsCreating] = useState(false);
+    const [isSctpLinkUpdating, setIsSctpLinkUpdating] = useState(false);
 
 
     function isValidIPv4(ip) {
@@ -27,7 +26,7 @@ const CreateSctpLinkForm = ({ update, close, link }) => {
     }
 
 
-    async function create(e) {
+    async function updateLink(e) {
         e.preventDefault();
         setClassForm("fw-light was-validated")
         let trimedName = name.trim();
@@ -58,8 +57,8 @@ const CreateSctpLinkForm = ({ update, close, link }) => {
             }
         }
 
-        setIsSctpLinsCreating(true);
-        const response = await SctpLinkService.create({
+        setIsSctpLinkUpdating(true);
+        const response = await SctpLinkService.update(link.id, {
             "name": resultName,
             "type": type,
             "local-addresses": localAddresses,
@@ -70,15 +69,15 @@ const CreateSctpLinkForm = ({ update, close, link }) => {
             "is-heartbeat-enabled": heartbeat
         });
 
-        if(response && response.status === 201) {
+        if(response && response.status === 202) {
             await update();
-            setIsSctpLinsCreating(false);
+            setIsSctpLinkUpdating(false);
             close();
         } else if (response && response.status === 400) {
-            setIsSctpLinsCreating(false);
+            setIsSctpLinkUpdating(false);
             alert(response.data.message)
         } else {
-            setIsSctpLinsCreating(false);
+            setIsSctpLinkUpdating(false);
             alert(SERVER_ERROR)
         }
     }
@@ -107,16 +106,16 @@ const CreateSctpLinkForm = ({ update, close, link }) => {
 
 
     function getButtonCreate() {
-        if (isSctpLinsCreating) {
+        if (isSctpLinkUpdating) {
             return (
                 <button class="btn btn-primary btn-lg" type="button" disabled="">
                     <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                    <span role="status">Creating SCTP-link...</span>
+                    <span role="status">Updating SCTP-link...</span>
                 </button>
             )
         }
         return (
-            <button class="btn btn-primary btn-lg" onClick={create}>Create</button>
+            <button class="btn btn-primary btn-lg" onClick={updateLink}>Update</button>
         )
     }
 
@@ -195,4 +194,4 @@ const CreateSctpLinkForm = ({ update, close, link }) => {
     )
 };
 
-export default CreateSctpLinkForm;
+export default EditSctpLinkForm;

@@ -1,8 +1,8 @@
 import React from 'react';
 
-const SettingsButton = () => {
+const SettingsButton = (props) => {
     return (
-        <button title="Edit" type="button" class="btn btn-sm btn-outline-secondary d-flex justify-content-center align-items-center">
+        <button {...props} title="Edit" type="button" class="btn btn-sm btn-outline-secondary d-flex justify-content-center align-items-center">
             <svg class="bi" width="1.3em" height="1.3em" fill="white">
                 <use href="#gear-fill"></use>
             </svg>

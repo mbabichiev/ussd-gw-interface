@@ -1,16 +1,27 @@
 import React from 'react';
 import CopyButton from './buttons/CopyButton';
+import InfoButton from './buttons/InfoButton';
 import RestartButton from './buttons/RestartButton';
 import SettingsButton from './buttons/SettingsButton';
 import StartButton from './buttons/StartButton';
 import StopButton from './buttons/StopButton';
 import TrashButton from './buttons/TrashButton';
 
-const SctpLinkItem = ({ link, startItem, restartItem, stopItem, deleteItem, copyItem }) => {
+const SctpLinkItem = ({ link, startItem, restartItem, stopItem, deleteItem, copyItem, editItem, infoItem }) => {
 
     function getLinkState() {
         const state = link["status"] == null ? "DOWN" : link["status"];
-        const style = { color: state === "ACTIVE" ? "green" : "red" };
+        let color;
+        if (state === "ACTIVE") {
+            color = "green"
+        }
+        else if (state === "DOWN") {
+            color = "red"
+        }
+        else {
+            color = "yellow"
+        }
+        const style = { color: color };
         return <div style={style}>{state}</div>;
     }
 
@@ -19,23 +30,31 @@ const SctpLinkItem = ({ link, startItem, restartItem, stopItem, deleteItem, copy
     }
 
     function startLink() {
-        startItem(link.id);
+        startItem(link.id, "START");
     }
 
     function restartLink() {
-        restartItem(link.id);
+        restartItem(link.id, "RESTART");
     } 
 
     function stopLink() {
-        stopItem(link.id);
+        stopItem(link.id, "STOP");
     }
 
     function deleteLink() {
-        deleteItem(link.id);
+        deleteItem(link.id, "DELETE");
     }
 
     function copyLink() {
-        copyItem(link);
+        copyItem(link, "COPY");
+    }
+
+    function editLink() {
+        editItem(link, "EDIT");
+    }
+
+    function infoLink() {
+        infoItem(link, "INFO")
     }
 
     function getStartStopButtons() {
@@ -75,8 +94,9 @@ const SctpLinkItem = ({ link, startItem, restartItem, stopItem, deleteItem, copy
             <th class="align-middle">
                 <div class="btn-group" style={{ color: 'white' }}>
                     {getStartStopButtons()}
+                    <InfoButton onClick={infoLink}/>
                     <CopyButton onClick={copyLink}/>
-                    <SettingsButton/>
+                    <SettingsButton onClick={editLink}/>
                     <TrashButton onClick={deleteLink}/>
                 </div>
             </th>

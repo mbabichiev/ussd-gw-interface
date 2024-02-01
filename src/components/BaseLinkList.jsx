@@ -1,15 +1,6 @@
-import React, { useState, cloneElement } from 'react';
-import Modal from './UI/Modal/Modal';
+import React from 'react'
 
-const BaseLinkList = ({ nameList, table, createButtonName, form, modal, isUpdating }) => {
-
-    const [showModal, setShowModal] = useState(false);
-
-    function toggleModal() {
-        setShowModal(!showModal);
-    }
-
-    const formWithClose = cloneElement(form, { close: toggleModal });
+const BaseLinkList = ({ nameList, table, modal, isUpdating }) => {
 
     return (
         <div>
@@ -22,16 +13,6 @@ const BaseLinkList = ({ nameList, table, createButtonName, form, modal, isUpdati
                 </div>
             </h3>
             {table}
-            <button className="btn btn-outline-secondary d-inline-flex align-items-center" type="button" onClick={toggleModal}>
-                <svg className="me-2" width="1.3em" height="1.3em" fill="currentColor"><use href="#add"></use></svg>
-                {createButtonName}
-            </button>
-            <Modal
-                isOpen={showModal}
-                name={createButtonName}
-                close={toggleModal}>
-                {formWithClose}
-            </Modal>
             {modal}
         </div>
     );

@@ -1,8 +1,9 @@
 import React from 'react';
+import CopyButton from './buttons/CopyButton';
 import SettingsButton from './buttons/SettingsButton';
 import TrashButton from './buttons/TrashButton';
 
-const M3uaLinkItem = ({ link }) => {
+const M3uaLinkItem = ({ link, deleteItem, copyItem, editItem }) => {
 
     function getLinkState() {
         const state = link["status"] == null ? "DOWN" : link["status"];
@@ -22,6 +23,18 @@ const M3uaLinkItem = ({ link }) => {
 
     function formatSSN(ssnArray) {
         return "[" + ssnArray.join(', ') + "]";
+    }
+
+    function deleteLink() {
+        deleteItem(link.id, "DELETE");
+    }
+
+    function copyLink() {
+        copyItem(link, "COPY");
+    }
+
+    function editLink() {
+        editItem(link, "EDIT");
     }
 
     return (
@@ -62,8 +75,9 @@ const M3uaLinkItem = ({ link }) => {
             </th>
             <th class="align-middle">
                 <div class="btn-group" style={{ color: 'white' }}>
-                    <SettingsButton />
-                    <TrashButton />
+                    <CopyButton onClick={copyLink}/>
+                    <SettingsButton onClick={editLink}/>
+                    <TrashButton onClick={deleteLink}/>
                 </div>
             </th>
         </tr>

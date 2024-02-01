@@ -58,6 +58,17 @@ export default class SctpLinkService {
         }
     }
 
+    static async update(id, data) {
+        try {
+            const response = await axios.put(`${USSD_SERVER_URL}/api/sctp/${id}`, data);
+            return response;
+        }
+        catch (error) {
+            console.log(error.response);
+            return error.response;
+        }
+    }
+
     static async delete(id) {
         try {
             const response = await axios.delete(`${USSD_SERVER_URL}/api/sctp/${id}`);
